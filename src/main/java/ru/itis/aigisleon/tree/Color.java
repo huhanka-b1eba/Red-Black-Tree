@@ -1,4 +1,4 @@
-package aa.tulybaev;
+package ru.itis.aigisleon.tree;
 
 public enum Color {
     BLACK,

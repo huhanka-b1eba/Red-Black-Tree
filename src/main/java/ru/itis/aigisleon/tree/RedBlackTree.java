@@ -1,4 +1,4 @@
-package aa.tulybaev;
+package ru.itis.aigisleon.tree;
 
 public class RedBlackTree<T extends Comparable<T>>{
 
@@ -142,16 +142,134 @@ public class RedBlackTree<T extends Comparable<T>>{
         }
     }
 
+    public Node<T> search(T value) {
+        return search(root, value);
+    }
+
 
     // Удаление
+    public void delete(T value) {
+        Node<T> z = search(root, value);
+        if (z == nil) return;
+
+        Node<T> y = z;
+        Color yOriginalColor = y.color;
+        Node<T> x;
+
+        if (z.left == nil) {
+            x = z.right;
+            transplant(z, z.right);
+        } else if (z.right == nil) {
+            x = z.left;
+            transplant(z, z.left);
+        } else {
+            y = minimum(z.right);
+            yOriginalColor = y.color;
+            x = y.right;
+
+            if (y.parent == z) {
+                x.parent = y;
+            } else {
+                transplant(y, y.right);
+                y.right = z.right;
+                y.right.parent = y;
+            }
+
+            transplant(z, y);
+            y.left = z.left;
+            y.left.parent = y;
+            y.color = z.color;
+        }
+
+        if (yOriginalColor == Color.BLACK) {
+            deleteFixup(x);
+        }
+    }
+
+    public void deleteFixup(Node<T> x) {
+        while (x != root && x.color == Color.BLACK) {
+            if (x == x.parent.left) {
+                Node<T> w = x.parent.right;
+
+                if (w.color == Color.RED) {
+                    w.color = Color.BLACK;
+                    x.parent.color = Color.RED;
+                    leftRotate(x.parent);
+                    w = x.parent.right;
+                }
+
+                if (w.left.color == Color.BLACK && w.right.color == Color.BLACK) {
+                    w.color = Color.RED;
+                    x = x.parent;
+                } else {
+                    if (w.right.color == Color.BLACK) {
+                        w.left.color = Color.BLACK;
+                        w.color = Color.RED;
+                        rightRotate(w);
+                        w = x.parent.right;
+                    }
+
+                    w.color = x.parent.color;
+                    x.parent.color = Color.BLACK;
+                    w.right.color = Color.BLACK;
+                    leftRotate(x.parent);
+                    x = root;
+                }
+            } else {
+                Node<T> w = x.parent.left;
+
+                if (w.color == Color.RED) {
+                    w.color = Color.BLACK;
+                    x.parent.color = Color.RED;
+                    rightRotate(x.parent);
+                    w = x.parent.left;
+                }
+
+                if (w.right.color == Color.BLACK && w.left.color == Color.BLACK) {
+                    w.color = Color.RED;
+                    x = x.parent;
+                } else {
+                    if (w.left.color == Color.BLACK) {
+                        w.right.color = Color.BLACK;
+                        w.color = Color.RED;
+                        leftRotate(w);
+                        w = x.parent.left;
+                    }
+
+                    w.color = x.parent.color;
+                    x.parent.color = Color.BLACK;
+                    w.left.color = Color.BLACK;
+                    rightRotate(x.parent);
+                    x = root;
+                }
+            }
+        }
+        x.color = Color.BLACK;
+    }
+
+
     // ...
 
     // Дополнительные методы
+
+    // минимум
     private Node<T> minimum(Node<T> x) {
         while (x.left != nil) {
             x = x.left;
         }
         return x;
+    }
+
+    // замена одного поддерева другим
+    private void transplant(Node<T> u, Node<T> v) {
+        if (u.parent == nil) {
+            root = v;
+        } else if (u == u.parent.left) {
+            u.parent.left = v;
+        } else {
+            u.parent.right = v;
+        }
+        v.parent = u.parent;
     }
 
     public boolean contains(T key) {
