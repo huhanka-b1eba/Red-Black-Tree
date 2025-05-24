@@ -13,41 +13,46 @@ public class Main {
         File file = new File("rbt_result.csv");
 
         try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
-            writer.println("iteration, numberOfData, addingTime, findingTime, deletingTime");
-            for (int i = 0; i < 100; i++) {
-                fileName = "ticket_rbt_tests/ticket_rbt_test_" + i + ".txt";
-                try (Scanner sc = new Scanner(new File(fileName))) {
-                    TicketBookingSystem system = new TicketBookingSystem();
-                    int n = sc.nextInt();
+            writer.println("numberOfData, addingTime, findingTime, deletingTime");
+            fileName = "rbt_test.txt";
+            try (Scanner sc = new Scanner(new File(fileName))) {
+                TicketBookingSystem system = new TicketBookingSystem();
+                int n = sc.nextInt();
+                long[] addingTime = new long[n];
+                long[] deletingTime = new long[n];
+                long[] findingTime = new long[n];
 
-                    int toFind = 0;
-                    for (int j = 0; j < n - 1; j++) {
-                        if (j == n / 2) {
-                            toFind = sc.nextInt();
-                            system.bookTicket(new Ticket(toFind, sc.next(), sc.next()));
-                        } else {
-                            system.bookTicket(new Ticket(sc.nextInt(), sc.next(), sc.next()));
-                        }
-                    }
+                for (int i = 0; i < n; i++) {
+                    int seat = sc.nextInt();
+                    String name = sc.next();
+                    String time = sc.next();
+                    Ticket ticket = new Ticket(seat, name, time);
+
                     long addStart = System.nanoTime();
-                    system.bookTicket(new Ticket(sc.nextInt(), sc.next(), sc.next()));
+                    system.bookTicket(ticket);
                     long addFinish = System.nanoTime();
+                    addingTime[i] = addFinish - addStart;
 
                     long findStart = System.nanoTime();
-                    system.findBooking(toFind);
+                    system.findBooking(seat);
                     long findFinish = System.nanoTime();
+                    findingTime[i] = findFinish - findStart;
 
                     long deleteStart = System.nanoTime();
-                    system.cancelBooking(toFind);
+                    system.cancelBooking(seat);
                     long deleteFinish = System.nanoTime();
 
-
-                    writer.println(i + ", " + n + ", " + (addFinish - addStart) + ", " + (findFinish - findStart) + ", " + (deleteFinish - deleteStart));
-                    writer.flush();
-
-                } catch (FileNotFoundException e) {
-                    throw new RuntimeException(e);
+                    deletingTime[i] = deleteFinish - deleteStart;
+                    system.bookTicket(ticket);
                 }
+
+                for (int i = 0; i < n; i++) {
+                    writer.println((i+1) + ", " + addingTime[i] + ", " + findingTime[i] + ", " + deletingTime[i]);
+                }
+
+                writer.flush();
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

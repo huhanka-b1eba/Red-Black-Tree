@@ -18,7 +18,7 @@ public class TicketGenerator {
         HashSet<Integer> usedIds = new HashSet<>();
         int i = 0;
         while (tickets.size() < count) {
-            int seatId = 1 + random.nextInt(count * 5);
+            int seatId = 1 + random.nextInt(count);
             if (usedIds.add(seatId)) {
                 String customer = "Клиент_" + i++;
                 tickets.add(new Ticket(seatId, customer));
@@ -28,19 +28,14 @@ public class TicketGenerator {
     }
 
     public static void main(String[] args) {
-        int n = 0;
-        String dir = "ticket_rbt_tests";
-        new File(dir).mkdirs();
-        for (int i = 0; i < 100; i++) {
-            n += 100;
-            String fileName = dir + "/ticket_rbt_test_" + i + ".txt";
-            try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) {
-                writer.println(n);
-                generate(n).forEach(writer::println);
-                writer.flush();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+        int n = 10000;
+        String fileName = "rbt_test.txt";
+        try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) {
+            writer.println(n);
+            generate(n).forEach(writer::println);
+            writer.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }
