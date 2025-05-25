@@ -1,5 +1,8 @@
 package ru.itis.aigisleon.tree;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class RedBlackTree<T extends Comparable<T>>{
 
     private Node<T> root;
@@ -8,7 +11,11 @@ public class RedBlackTree<T extends Comparable<T>>{
     public RedBlackTree() {
         nil = new Node<>(null);
         nil.color = Color.BLACK;
+        nil.left = nil;
+        nil.right = nil;
+        nil.parent = nil;
         root = nil;
+
     }
 
     // Повороты
@@ -198,20 +205,27 @@ public class RedBlackTree<T extends Comparable<T>>{
                     w = x.parent.right;
                 }
 
-                if (w.left.color == Color.BLACK && w.right.color == Color.BLACK) {
+                if ((w.left == nil || w.left.color == Color.BLACK) &&
+                        (w.right == nil || w.right.color == Color.BLACK)) {
                     w.color = Color.RED;
                     x = x.parent;
                 } else {
-                    if (w.right.color == Color.BLACK) {
-                        w.left.color = Color.BLACK;
+                    if (w.right == nil || w.right.color == Color.BLACK) {
+                        if (w.left != nil) {
+                            w.left.color = Color.BLACK;
+                        }
                         w.color = Color.RED;
                         rightRotate(w);
                         w = x.parent.right;
                     }
 
-                    w.color = x.parent.color;
+                    if (w != nil) {
+                        w.color = x.parent.color;
+                    }
                     x.parent.color = Color.BLACK;
-                    w.right.color = Color.BLACK;
+                    if (w.right != nil) {
+                        w.right.color = Color.BLACK;
+                    }
                     leftRotate(x.parent);
                     x = root;
                 }
@@ -225,20 +239,27 @@ public class RedBlackTree<T extends Comparable<T>>{
                     w = x.parent.left;
                 }
 
-                if (w.right.color == Color.BLACK && w.left.color == Color.BLACK) {
+                if ((w.right == nil || w.right.color == Color.BLACK) &&
+                        (w.left == nil || w.left.color == Color.BLACK)) {
                     w.color = Color.RED;
                     x = x.parent;
                 } else {
-                    if (w.left.color == Color.BLACK) {
-                        w.right.color = Color.BLACK;
+                    if (w.left == nil || w.left.color == Color.BLACK) {
+                        if (w.right != nil) {
+                            w.right.color = Color.BLACK;
+                        }
                         w.color = Color.RED;
                         leftRotate(w);
                         w = x.parent.left;
                     }
 
-                    w.color = x.parent.color;
+                    if (w != nil) {
+                        w.color = x.parent.color;
+                    }
                     x.parent.color = Color.BLACK;
-                    w.left.color = Color.BLACK;
+                    if (w.left != nil) {
+                        w.left.color = Color.BLACK;
+                    }
                     rightRotate(x.parent);
                     x = root;
                 }
@@ -248,9 +269,25 @@ public class RedBlackTree<T extends Comparable<T>>{
     }
 
 
-    // ...
+    // Обход in-order
+    public List<T> inOrderTraversal(){
+        List<T> sorted = new ArrayList<>();
+        inOrderTraversal(root, sorted);
+        return sorted;
+    }
+
+    private void inOrderTraversal(Node<T> node, List<T> list) {
+        if (node == nil) return;
+        inOrderTraversal(node.left, list);
+        list.add(node.values);
+        inOrderTraversal(node.right, list);
+    }
 
     // Дополнительные методы
+
+    public Node<T> getNil() {
+        return nil;
+    }
 
     // минимум
     private Node<T> minimum(Node<T> x) {

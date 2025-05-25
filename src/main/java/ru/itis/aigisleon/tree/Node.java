@@ -3,13 +3,9 @@ package ru.itis.aigisleon.tree;
 public class Node<T> {
 
     public T values;
-
     public Color color;
-
     public Node<T> left;
-
     public Node<T> right;
-
     public Node<T> parent;
 
     public Node(T values) {

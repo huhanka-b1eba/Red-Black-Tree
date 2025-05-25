@@ -1,6 +1,7 @@
 package ru.itis.aigisleon.model;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Ticket implements Comparable<Ticket> {
     private final int seatId;
@@ -19,6 +20,10 @@ public class Ticket implements Comparable<Ticket> {
         this.bookingTime = bookingTime;
     }
 
+    public int getSeatId() {
+        return seatId;
+    }
+
     @Override
     public String toString() {
         return "" + seatId + " " + customerName + " " + bookingTime;
@@ -27,5 +32,17 @@ public class Ticket implements Comparable<Ticket> {
     @Override
     public int compareTo(Ticket o) {
         return seatId - o.seatId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Ticket ticket = (Ticket) o;
+        return seatId == ticket.seatId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(seatId);
     }
 }

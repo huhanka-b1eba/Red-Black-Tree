@@ -2,13 +2,16 @@ package ru.itis.aigisleon.model;
 
 import ru.itis.aigisleon.tree.RedBlackTree;
 
+import java.util.List;
+
 public class TicketBookingSystem {
     private final RedBlackTree<Ticket> bookings = new RedBlackTree<>();
+    private int space = 10001;
 
     // Бронирование места
     public boolean bookTicket(Ticket ticket) {
-        if (bookings.search(ticket) != null) {
-            return false;  // Место уже занято
+        if (bookings.search(ticket) != bookings.getNil() || ticket.getSeatId() > space) {
+            return false;
         }
         bookings.insert(ticket);
         return true;
@@ -18,7 +21,7 @@ public class TicketBookingSystem {
     public boolean cancelBooking(int seatId) {
         Ticket dummyTicket = new Ticket(seatId, "");
         Ticket found = bookings.search(dummyTicket).values;
-        if (found == null) {
+        if (found == bookings.getNil().values) {
             return false;  // Место не найдено
         }
         bookings.delete(found);
@@ -30,10 +33,15 @@ public class TicketBookingSystem {
         return bookings.search(new Ticket(seatId, "")).values;
     }
 
-    /*
-    // Вывод всех бронирований (в отсортированном порядке)
-    public void printAllBookings() {
-        bookings.inOrderTraversal();  // Нужно реализовать в RBT
+    public List<Ticket> getAllBookings() {
+        return bookings.inOrderTraversal();
     }
-     */
+
+    public void setSpace(int space) {
+        this.space = space;
+    }
+
+    public int getSpace() {
+        return space;
+    }
 }
